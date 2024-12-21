@@ -23,7 +23,7 @@ async fn graphiql() -> impl IntoResponse {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt::init();
-    dotenv::dotenv().ok();
+    dotenvy::dotenv().ok();
 
     let database_url = std::env::var("DATABASE_URL").context("DATABASE_URL is not set")?;
     let pool = sqlx::PgPool::connect(&database_url).await?;
