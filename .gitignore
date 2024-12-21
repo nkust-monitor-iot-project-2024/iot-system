@@ -2,6 +2,7 @@
 .devenv*
 .devenv/
 .direnv/
+.pre-commit-config.yaml
 
 .env
 target/
