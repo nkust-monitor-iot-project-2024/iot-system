@@ -1,4 +1,4 @@
-pub(crate) mod types;
+pub(crate) mod entity;
 pub(crate) mod query;
 pub(crate) mod mutation;
 pub(crate) mod utils;

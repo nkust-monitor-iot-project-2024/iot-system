@@ -1,5 +1,5 @@
 use crate::prelude::*;
-use crate::types::Entity;
+use crate::entity::Entity;
 use bigdecimal::BigDecimal;
 
 pub struct MutationRoot;
