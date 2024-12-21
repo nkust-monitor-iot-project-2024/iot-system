@@ -1,1 +1,8 @@
-/target
+# devenv
+.devenv*
+.devenv/
+.direnv/
+
+.env
+target/
+.DS_Store

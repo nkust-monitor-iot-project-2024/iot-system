@@ -1,17 +1,6 @@
-[package]
-name = "entity-api"
-version = "0.1.0"
-edition = "2024"
+[workspace]
 
-[dependencies]
-anyhow = "1.0.94"
-async-graphql = { version = "7.0.13", features = ["bigdecimal", "time"] }
-async-graphql-poem = "7.0.13"
-bigdecimal = "0.4.7"
-dotenvy = "0.15.7"
-poem = "3.1.5"
-sqlx = { version = "0.8.2", features = ["tls-rustls-aws-lc-rs", "postgres", "runtime-tokio", "bigdecimal", "time"] }
-time = "0.3.37"
-tokio = { version = "1.42.0", features = ["full"] }
-tracing = "0.1.41"
-tracing-subscriber = "0.3.19"
+resolver = "3"
+members = [
+    "entity-api",
+]
