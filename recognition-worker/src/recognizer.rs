@@ -73,6 +73,8 @@ impl RecognitionWorker {
             picture_type,
         }: RecognitionPayload,
     ) -> anyhow::Result<Vec<RecognitionResult>> {
+        tracing::info!("Recognizing frame {}…", frame_id);
+
         let image_reader = {
             let mut reader = image::ImageReader::new(std::io::Cursor::new(picture));
             reader.set_format(ImageFormat::Png);
@@ -119,6 +121,7 @@ impl RecognitionWorker {
             })
             .collect::<anyhow::Result<Vec<RecognitionResult>>>()?;
 
+        tracing::info!("Recognized! Found {} entities.", results.len());
         Ok(results)
     }
 }

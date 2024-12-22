@@ -41,6 +41,8 @@ async fn main() -> anyhow::Result<()> {
     let worker = RecognitionWorker::new(yolo_model);
 
     while let Some(frame_message) = frame_subscriber.next().await {
+        tracing::debug!("Received a frame message.");
+
         let worker = worker.clone(); // cheap clone
         let task_tracker_clone = task_tracker.clone();
 
@@ -72,7 +74,6 @@ async fn main() -> anyhow::Result<()> {
                 }
             };
 
-            tracing::info!("Found {} entities", results.len());
             for result in results {
                 tracing::info!("Entity: {:?}", result);
             }
