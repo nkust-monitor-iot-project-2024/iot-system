@@ -8,7 +8,7 @@ use std::sync::Arc;
 
 use anyhow::Context as _;
 use config::GatewayConfig;
-use event::{Context, RecognizedEventHandler};
+use event::{Context, RecognitionResults, RecognizedEventHandler};
 use futures::StreamExt as _;
 use tokio_util::task::TaskTracker;
 
@@ -63,6 +63,15 @@ async fn main() -> anyhow::Result<()> {
         if recognition_result.results.is_empty() {
             continue;
         }
+
+        // filter out the results that is not person
+        let recognition_result = RecognitionResults {
+            results: recognition_result
+                .results
+                .into_iter()
+                .filter(|result| result.label == "person")
+                .collect(),
+        };
 
         let publishers = publishers.clone();
 
