@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use anyhow::Context;
-use config::{builder::DefaultState, Environment, File, FileFormat};
+use config::{Environment, File, FileFormat, builder::DefaultState};
 use dotenvy::vars;
 use opendal::services::S3Config;
 
@@ -39,4 +39,3 @@ pub fn parse_config() -> anyhow::Result<GatewayConfig> {
 
     Ok(deserialized_config)
 }
-

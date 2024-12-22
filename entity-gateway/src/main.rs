@@ -1,7 +1,7 @@
 pub(crate) mod config;
+pub(crate) mod database;
 pub(crate) mod discord;
 pub(crate) mod event;
-pub(crate) mod database;
 pub(crate) mod storage;
 
 use std::sync::Arc;
@@ -27,8 +27,7 @@ async fn main() -> anyhow::Result<()> {
         .await
         .context("Failed to connect to NATS")?;
 
-    let storage = storage::Storage::from_config(s3)
-        .context("Failed to build storage")?;
+    let storage = storage::Storage::from_config(s3).context("Failed to build storage")?;
 
     let context = Context {
         storage: Arc::new(storage),
@@ -38,13 +37,16 @@ async fn main() -> anyhow::Result<()> {
 
     let mut recognition_subscriber = nats_client.subscribe("recognition").await?;
 
-    let publishers: Vec<Arc<dyn RecognizedEventHandler>> = vec![{
-        let discord_handler = discord::DiscordHandler::new(&discord_webhook_url)?;
-        Arc::new(discord_handler) as Arc<dyn RecognizedEventHandler>
-    }, {
-        let database_handler = database::DatabaseHandler::connect(&database_url).await?;
-        Arc::new(database_handler) as Arc<dyn RecognizedEventHandler>
-    }];
+    let publishers: Vec<Arc<dyn RecognizedEventHandler>> = vec![
+        {
+            let discord_handler = discord::DiscordHandler::new(&discord_webhook_url)?;
+            Arc::new(discord_handler) as Arc<dyn RecognizedEventHandler>
+        },
+        {
+            let database_handler = database::DatabaseHandler::connect(&database_url).await?;
+            Arc::new(database_handler) as Arc<dyn RecognizedEventHandler>
+        },
+    ];
 
     while let Some(message) = recognition_subscriber.next().await {
         let recognition_result = match event::RecognitionResults::try_from(message) {

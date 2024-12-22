@@ -19,7 +19,9 @@ impl DatabaseHandler {
 impl RecognizedEventHandler for DatabaseHandler {
     #[tracing::instrument(skip(self, context))]
     async fn on_receive_recognition_result(&self, context: &Context, result: &RecognitionResults) {
-        tracing::info!("Received recognition result from the event bus and sending it to the database");
+        tracing::info!(
+            "Received recognition result from the event bus and sending it to the database"
+        );
 
         let storage = context.storage.clone();
 

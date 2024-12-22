@@ -1,5 +1,5 @@
 use anyhow::Context;
-use opendal::{layers::LoggingLayer, services::S3Config, Configurator, Operator};
+use opendal::{Configurator, Operator, layers::LoggingLayer, services::S3Config};
 
 use crate::event::RecognitionResult;
 
@@ -28,11 +28,16 @@ impl Storage {
     /// Put the image in the recognition result to the storage.
     ///
     /// Returning the key of the image.
-    pub async fn put_recognition_result(&self, result: &RecognitionResult) -> anyhow::Result<String> {
+    pub async fn put_recognition_result(
+        &self,
+        result: &RecognitionResult,
+    ) -> anyhow::Result<String> {
         let image_id = uuid::Uuid::new_v4();
         let image_key = format!("{}.{}", image_id, result.picture_type.extensions_str()[0]);
 
-        self.operator.write(&image_key, result.picture.clone()).await?;
+        self.operator
+            .write(&image_key, result.picture.clone())
+            .await?;
 
         Ok(image_key)
     }
