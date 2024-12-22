@@ -67,6 +67,7 @@ pub struct RecognitionResult {
     pub label: String,
     pub confidence: f32,
     pub picture: Bytes,
+    pub picture_type: ImageFormat,
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
 
@@ -136,6 +137,7 @@ impl RecognitionWorker {
                     label: label.to_string(), // fixme: leverage ArcStr
                     confidence,
                     picture: Bytes::from(buf),
+                    picture_type: ImageFormat::WebP,
                     created_at,
                 })
             })
