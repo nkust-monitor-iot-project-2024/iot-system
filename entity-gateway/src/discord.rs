@@ -1,6 +1,6 @@
 use std::{collections::BTreeMap, sync::Arc};
 
-use crate::event::{RecognitionResults, RecognizedEventHandler};
+use crate::event::{Context, RecognitionResults, RecognizedEventHandler};
 
 #[derive(Clone)]
 pub struct DiscordHandler {
@@ -19,7 +19,10 @@ impl DiscordHandler {
 
 #[async_trait::async_trait]
 impl RecognizedEventHandler for DiscordHandler {
-    async fn on_receive_recognition_result(&self, result: &RecognitionResults) {
+    #[tracing::instrument(skip(self))]
+    async fn on_receive_recognition_result(&self, _: &Context, result: &RecognitionResults) {
+        tracing::info!("Received recognition result from the event bus and sending it to Discord");
+
         for result in &result.results {
             let message = discord_webhook2::message::Message::new(|message| {
                 message.embed(|embed| {
