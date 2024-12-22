@@ -5,7 +5,6 @@ use anyhow::Context;
 use async_nats::HeaderMap;
 use config::RecognitionConfig;
 use futures::StreamExt as _;
-use ort::execution_providers::{CUDAExecutionProvider, CoreMLExecutionProvider};
 use recognizer::{RecognitionPayload, RecognitionWorker};
 use std::sync::Arc;
 use tokio_util::task::TaskTracker;
@@ -20,8 +19,14 @@ async fn main() -> anyhow::Result<()> {
     // Initialize ONNX runtime
     ort::init()
         .with_execution_providers([
-            CUDAExecutionProvider::default().build(),
-            CoreMLExecutionProvider::default().build(),
+            #[cfg(feature = "cuda")]
+            {
+                ort::execution_providers::CUDAExecutionProvider::default().build()
+            },
+            #[cfg(feature = "coreml")]
+            {
+                ort::execution_providers::CoreMLExecutionProvider::default().build()
+            },
         ])
         .with_telemetry(true)
         .commit()
