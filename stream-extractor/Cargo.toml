@@ -1,0 +1,20 @@
+[package]
+name = "stream-extractor"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.94"
+async-nats = "0.38.0"
+base64 = "0.22.1"
+bytes = "1.9.0"
+crossbeam = "0.8.4"
+glib = "0.20.7"
+gstreamer = "0.23.3"
+gstreamer-app = "0.23.3"
+gstreamer-video = "0.23.3"
+image = "0.25.5"
+tokio = { version = "1.42.0", features = ["macros", "rt-multi-thread"] }
+tokio-util = { version = "0.7.13", features = ["rt"] }
+tracing = "0.1.41"
+tracing-subscriber = "0.3.19"
