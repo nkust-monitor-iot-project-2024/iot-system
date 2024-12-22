@@ -21,14 +21,14 @@ pub struct ExtractorWorkerBuilder {
     ///
     /// This parameter helps manage the load on the inference queue by sending
     /// frames only after a specified number of frames have been processed.
-    /// The default is set to dispatch a frame every 60 frames.
+    /// The default is set to dispatch a frame every 300 frames (10s at 30fps, 5s at 60fps).
     pub frame_interval: Option<usize>,
 }
 
 impl ExtractorWorkerBuilder {
     pub fn build(self) -> anyhow::Result<Pipeline> {
         let pipeline = gstreamer::Pipeline::new();
-        let frame_interval = self.frame_interval.unwrap_or(60);
+        let frame_interval = self.frame_interval.unwrap_or(300);
 
         let rtspsrc_element = gst::ElementFactory::make("rtspsrc")
             .property("location", self.rtsp_url)
