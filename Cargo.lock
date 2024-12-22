@@ -136,6 +136,7 @@ dependencies = [
  "base64 0.22.1",
  "bigdecimal",
  "bytes",
+ "chrono",
  "fast_chemail",
  "fnv",
  "futures-timer",
@@ -154,7 +155,6 @@ dependencies = [
  "static_assertions_next",
  "tempfile",
  "thiserror 1.0.69",
- "time",
 ]
 
 [[package]]
@@ -923,6 +923,7 @@ dependencies = [
  "async-graphql",
  "async-graphql-poem",
  "bigdecimal",
+ "chrono",
  "config",
  "dotenvy",
  "opendal",
@@ -930,7 +931,6 @@ dependencies = [
  "reqwest",
  "serde",
  "sqlx",
- "time",
  "tokio",
  "tracing",
  "tracing-subscriber",
@@ -944,11 +944,15 @@ dependencies = [
  "anyhow",
  "async-nats",
  "async-trait",
+ "bigdecimal",
  "bytes",
  "chrono",
+ "config",
  "discord-webhook2",
+ "dotenvy",
  "futures",
  "image",
+ "opendal",
  "reqwest",
  "serde",
  "serde_json",
@@ -957,6 +961,7 @@ dependencies = [
  "tokio-util",
  "tracing",
  "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]
@@ -1896,6 +1901,7 @@ dependencies = [
  "ravif",
  "rayon",
  "rgb",
+ "serde",
  "tiff",
  "zune-core",
  "zune-jpeg",
@@ -3665,6 +3671,7 @@ dependencies = [
  "bigdecimal",
  "byteorder",
  "bytes",
+ "chrono",
  "crc",
  "crossbeam-queue",
  "either",
@@ -3690,7 +3697,6 @@ dependencies = [
  "smallvec",
  "sqlformat",
  "thiserror 1.0.69",
- "time",
  "tokio",
  "tokio-stream",
  "tracing",
@@ -3748,6 +3754,7 @@ dependencies = [
  "bitflags 2.6.0",
  "byteorder",
  "bytes",
+ "chrono",
  "crc",
  "digest",
  "dotenvy",
@@ -3775,7 +3782,6 @@ dependencies = [
  "sqlx-core",
  "stringprep",
  "thiserror 1.0.69",
- "time",
  "tracing",
  "whoami",
 ]
@@ -3791,6 +3797,7 @@ dependencies = [
  "bigdecimal",
  "bitflags 2.6.0",
  "byteorder",
+ "chrono",
  "crc",
  "dotenvy",
  "etcetera",
@@ -3816,7 +3823,6 @@ dependencies = [
  "sqlx-core",
  "stringprep",
  "thiserror 1.0.69",
- "time",
  "tracing",
  "whoami",
 ]
@@ -3828,6 +3834,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d5b2cf34a45953bfd3daaf3db0f7a7878ab9b7a6b91b422d24a7a9e4c857b680"
 dependencies = [
  "atoi",
+ "chrono",
  "flume",
  "futures-channel",
  "futures-core",
@@ -3840,7 +3847,6 @@ dependencies = [
  "serde",
  "serde_urlencoded",
  "sqlx-core",
- "time",
  "tracing",
  "url",
 ]
