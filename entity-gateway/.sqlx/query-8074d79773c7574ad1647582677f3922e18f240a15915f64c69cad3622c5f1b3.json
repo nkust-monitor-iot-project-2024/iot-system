@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                        INSERT INTO monitors (id)\n                        VALUES ($1)\n                        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "8074d79773c7574ad1647582677f3922e18f240a15915f64c69cad3622c5f1b3"
+}

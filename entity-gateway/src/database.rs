@@ -38,6 +38,35 @@ impl RecognizedEventHandler for DatabaseHandler {
                 .map(|b| b.round(4))
                 .unwrap_or_else(|| bigdecimal::BigDecimal::from_f32(0.0).unwrap());
 
+            // check if there is such monitor_id in the database
+            let monitor_id = sqlx::query!(
+                r#"
+                SELECT id FROM monitors WHERE id = $1
+                "#,
+                result.monitor_id
+            )
+            .fetch_one(&self.pool)
+            .await;
+            match monitor_id {
+                Ok(_) => {}
+                Err(sqlx::Error::RowNotFound) => {
+                    sqlx::query!(
+                        r#"
+                        INSERT INTO monitors (id)
+                        VALUES ($1)
+                        "#,
+                        result.monitor_id,
+                    )
+                    .execute(&self.pool)
+                    .await
+                    .unwrap();
+                }
+                Err(err) => {
+                    tracing::error!("Failed to check if there is such monitor: {:?}", err);
+                    continue;
+                }
+            }
+
             let _ = sqlx::query!(
                 r#"
                 INSERT INTO entities (image_id, monitor_id, confidence, label, created_at)
