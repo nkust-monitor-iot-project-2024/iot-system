@@ -2,7 +2,8 @@ use async_nats::Message;
 use bytes::Bytes;
 use serde::Deserialize;
 
-pub trait RecognizedEventHandler {
+#[async_trait::async_trait]
+pub trait RecognizedEventHandler: Sync + Send {
     async fn on_receive_recognition_result(&self, result: &RecognitionResults);
 }
 

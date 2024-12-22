@@ -17,6 +17,7 @@ impl DiscordHandler {
     }
 }
 
+#[async_trait::async_trait]
 impl RecognizedEventHandler for DiscordHandler {
     async fn on_receive_recognition_result(&self, result: &RecognitionResults) {
         for result in &result.results {

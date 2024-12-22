@@ -4,6 +4,8 @@ pub(crate) mod event;
 #[cfg(feature = "discord")]
 pub(crate) mod discord;
 
+use std::sync::Arc;
+
 use anyhow::Context;
 use config::GatewayConfig;
 use event::RecognizedEventHandler;
@@ -27,12 +29,12 @@ async fn main() -> anyhow::Result<()> {
 
     let mut recognition_subscriber = nats_client.subscribe("recognition").await?;
 
-    let publishers = vec![
+    let publishers: Vec<Arc<dyn RecognizedEventHandler>> = vec![
         #[cfg(feature = "discord")]
         {
             let discord_handler = discord::DiscordHandler::new(&discord_webhook_url)?;
 
-            discord_handler
+            Arc::new(discord_handler) as Arc<dyn RecognizedEventHandler>
         },
     ];
 
