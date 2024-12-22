@@ -5,17 +5,17 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0.94"
-async-graphql = { version = "7.0.13", features = ["bigdecimal", "time"] }
+async-graphql = { version = "7.0.13", features = ["bigdecimal", "chrono"] }
 async-graphql-poem = "7.0.13"
 bigdecimal = "0.4.7"
+chrono = "0.4.39"
 config = "0.15.4"
 dotenvy = "0.15.7"
 opendal = { version = "0.50.2", features = ["services-s3"] }
 poem = "3.1.5"
 reqwest = "0.12.9"
 serde = { version = "1.0.216", features = ["derive"] }
-sqlx = { version = "0.8.2", features = ["tls-native-tls", "postgres", "runtime-tokio", "bigdecimal", "time"] }
-time = "0.3.37"
+sqlx = { version = "0.8.2", features = ["tls-native-tls", "postgres", "runtime-tokio", "bigdecimal", "chrono"] }
 tokio = { version = "1.42.0", features = ["macros", "rt-multi-thread"] }
 tracing = "0.1.41"
 tracing-subscriber = "0.3.19"
