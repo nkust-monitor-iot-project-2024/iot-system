@@ -1,8 +1,6 @@
 pub(crate) mod config;
-pub(crate) mod event;
-
-#[cfg(feature = "discord")]
 pub(crate) mod discord;
+pub(crate) mod event;
 
 use std::sync::Arc;
 
@@ -29,14 +27,10 @@ async fn main() -> anyhow::Result<()> {
 
     let mut recognition_subscriber = nats_client.subscribe("recognition").await?;
 
-    let publishers: Vec<Arc<dyn RecognizedEventHandler>> = vec![
-        #[cfg(feature = "discord")]
-        {
-            let discord_handler = discord::DiscordHandler::new(&discord_webhook_url)?;
-
-            Arc::new(discord_handler) as Arc<dyn RecognizedEventHandler>
-        },
-    ];
+    let publishers: Vec<Arc<dyn RecognizedEventHandler>> = vec![{
+        let discord_handler = discord::DiscordHandler::new(&discord_webhook_url)?;
+        Arc::new(discord_handler) as Arc<dyn RecognizedEventHandler>
+    }];
 
     while let Some(message) = recognition_subscriber.next().await {
         tracing::debug!("Received an recognition message.");
