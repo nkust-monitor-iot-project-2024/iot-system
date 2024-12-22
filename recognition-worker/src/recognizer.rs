@@ -10,6 +10,7 @@ use yolo_rs::{BoundingBox, image_to_yolo_input_tensor, inference, model::YoloMod
 #[derive(Debug, Clone)]
 pub struct RecognitionPayload {
     pub frame_id: String,
+    pub monitor_id: Option<String>,
     pub picture: Bytes,
     pub picture_type: ImageFormat,
 }
@@ -34,11 +35,16 @@ impl TryFrom<Message> for RecognitionPayload {
             .map(|frame_id| frame_id.to_string())
             .context("missing Frame-Id header")?;
 
+        let monitor_id = header_map
+            .get("Monitor-Id")
+            .map(|monitor_id| monitor_id.to_string());
+
         let picture = msg.payload;
         let picture_type = ImageFormat::Png;
 
         Ok(Self {
             frame_id,
+            monitor_id,
             picture,
             picture_type,
         })
@@ -49,6 +55,7 @@ impl TryFrom<Message> for RecognitionPayload {
 #[serde(deny_unknown_fields)]
 pub struct RecognitionResult {
     pub frame_id: String,
+    pub monitor_id: Option<String>,
     pub label: String,
     pub confidence: f32,
     pub picture: Bytes,
@@ -69,11 +76,12 @@ impl RecognitionWorker {
         &self,
         RecognitionPayload {
             frame_id,
+            monitor_id,
             picture,
             picture_type,
         }: RecognitionPayload,
     ) -> anyhow::Result<Vec<RecognitionResult>> {
-        tracing::info!("Recognizing frame {}…", frame_id);
+        tracing::info!("Recognizing frame {frame_id} from {monitor_id:?}…");
 
         let image_reader = {
             let mut reader = image::ImageReader::new(std::io::Cursor::new(picture));
@@ -114,6 +122,7 @@ impl RecognitionWorker {
 
                 Ok(RecognitionResult {
                     frame_id: frame_id.clone(),
+                    monitor_id: monitor_id.clone(),
                     label: label.to_string(), // fixme: leverage ArcStr
                     confidence,
                     picture: Bytes::from(buf),

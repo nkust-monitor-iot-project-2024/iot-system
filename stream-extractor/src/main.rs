@@ -21,6 +21,7 @@ async fn main() -> anyhow::Result<()> {
 
     let ExtractorConfig {
         rtsp_url,
+        monitor_id,
         nats_url,
         frame_interval,
     } = config::parse_config()?;
@@ -51,7 +52,7 @@ async fn main() -> anyhow::Result<()> {
         for msg in bus.iter_timed(gst::ClockTime::from_seconds(30)) {
             match msg.view() {
                 gst::MessageView::Eos(..) => {
-                    tracing::info!("End of stream. Restart the worker if there is a new stream.");
+                    tracing::info!("End of stream. You should restart the worker manaully if there is a new stream.");
                     break;
                 }
                 gst::MessageView::Error(err) => {
@@ -74,9 +75,10 @@ async fn main() -> anyhow::Result<()> {
     });
 
     for (frame_id, frame) in receiver {
-        tracing::info!("Received frame {:}: send to NATS", frame_id);
+        tracing::info!("Received frame {frame_id} from monitor {monitor_id:?}; sending to NATS");
 
         let nats_client = nats_client.clone();
+        let monitor_id = monitor_id.clone();
 
         task_tracker.spawn(async move {
             let mut buf = Vec::new();
@@ -92,6 +94,10 @@ async fn main() -> anyhow::Result<()> {
             let mut nats_header = HeaderMap::new();
             nats_header.append("Content-Type", "image/png");
             nats_header.append("Frame-Id", frame_id.to_string());
+
+            if let Some(monitor_id) = monitor_id {
+                nats_header.append("Monitor-Id", monitor_id);
+            }
 
             // publish the frame to NATS
             let result = nats_client
