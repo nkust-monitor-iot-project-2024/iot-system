@@ -79,7 +79,7 @@ impl ExtractorWorkerBuilder {
                 // Increment the frame counter
                 let counter = frame_counter.fetch_add(1, Ordering::Relaxed);
 
-                // Save frame as PNG every second (assuming 1 frame per second)
+                // Save frame as WebP every second (assuming 1 frame per second)
                 if counter % frame_interval == 0 {
                     let width = video_info.width() as usize;
                     let height = video_info.height() as usize;

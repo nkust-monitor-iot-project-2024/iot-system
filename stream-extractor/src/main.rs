@@ -84,15 +84,15 @@ async fn main() -> anyhow::Result<()> {
             let mut buf = Vec::new();
             let mut cursor = std::io::Cursor::new(&mut buf);
 
-            if let Err(e) = frame.write_to(&mut cursor, ImageFormat::Png) {
-                tracing::error!("Failed to write frame to PNG: {:?}", e);
+            if let Err(e) = frame.write_to(&mut cursor, ImageFormat::WebP) {
+                tracing::error!("Failed to write frame to WebP: {:?}", e);
                 return;
             }
 
             let bytes = Bytes::from(buf);
 
             let mut nats_header = HeaderMap::new();
-            nats_header.append("Content-Type", "image/png");
+            nats_header.append("Content-Type", "image/webp");
             nats_header.append("Date", chrono::Utc::now().to_rfc3339());
             nats_header.append("Frame-Id", frame_id.to_string());
 

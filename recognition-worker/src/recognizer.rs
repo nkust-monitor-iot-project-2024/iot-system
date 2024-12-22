@@ -24,7 +24,7 @@ impl TryFrom<Message> for RecognitionPayload {
         let content_type = header_map.get("Content-Type").map(|ct| ct.to_string());
 
         if let Some(content_type) = content_type {
-            if content_type != "image/png" {
+            if content_type != "image/webp" {
                 anyhow::bail!("unsupported content type: {content_type}");
             }
         } else {
@@ -47,7 +47,7 @@ impl TryFrom<Message> for RecognitionPayload {
             .context("failed to parse Date header")?;
 
         let picture = msg.payload;
-        let picture_type = ImageFormat::Png;
+        let picture_type = ImageFormat::WebP;
 
         Ok(Self {
             frame_id,
@@ -95,7 +95,7 @@ impl RecognitionWorker {
 
         let image_reader = {
             let mut reader = image::ImageReader::new(std::io::Cursor::new(picture));
-            reader.set_format(ImageFormat::Png);
+            reader.set_format(ImageFormat::WebP);
 
             reader
         };
@@ -123,12 +123,12 @@ impl RecognitionWorker {
                 let cropped_image =
                     image.crop_imm(x1 as _, y1 as _, (x2 - x1) as u32, (y2 - y1) as u32);
 
-                // encode the cropped image to PNG
+                // encode the cropped image to WebP
                 let mut buf = Vec::new();
                 let mut cursor = std::io::Cursor::new(&mut buf);
                 cropped_image
-                    .write_to(&mut cursor, ImageFormat::Png)
-                    .context("Failed to write cropped image to PNG")?;
+                    .write_to(&mut cursor, ImageFormat::WebP)
+                    .context("Failed to write cropped image to WebP")?;
 
                 Ok(RecognitionResult {
                     frame_id: frame_id.clone(),
