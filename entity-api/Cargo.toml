@@ -10,7 +10,9 @@ async-graphql-poem = "7.0.13"
 bigdecimal = "0.4.7"
 config = "0.15.4"
 dotenvy = "0.15.7"
+opendal = { version = "0.50.2", features = ["services-s3"] }
 poem = "3.1.5"
+serde = { version = "1.0.216", features = ["derive"] }
 sqlx = { version = "0.8.2", features = ["tls-rustls-aws-lc-rs", "postgres", "runtime-tokio", "bigdecimal", "time"] }
 time = "0.3.37"
 tokio = { version = "1.42.0", features = ["full"] }
