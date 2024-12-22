@@ -2982,9 +2982,12 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "async-nats",
+ "bytes",
  "futures",
  "image",
  "ort",
+ "serde",
+ "serde_json",
  "tokio",
  "tokio-util",
  "tracing",

@@ -1,14 +1,14 @@
 pub(crate) mod config;
+pub(crate) mod recognizer;
 
 use anyhow::Context;
 use config::RecognitionConfig;
 use futures::StreamExt as _;
-use image::ImageFormat;
 use ort::execution_providers::{CUDAExecutionProvider, CoreMLExecutionProvider};
+use recognizer::RecognitionWorker;
 use std::sync::Arc;
 use tokio_util::task::TaskTracker;
 use yolo_rs::model::YoloModelSession;
-use yolo_rs::{image_to_yolo_input_tensor, inference};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -38,65 +38,43 @@ async fn main() -> anyhow::Result<()> {
         YoloModelSession::from_filename_v8("models/yolo11x.onnx")
             .expect("failed to load YOLO model"),
     );
+    let worker = RecognitionWorker::new(yolo_model);
 
     while let Some(frame_message) = frame_subscriber.next().await {
-        let header_map = frame_message.headers.unwrap_or_default();
-        let content_type = header_map.get("Content-Type").map(|ct| ct.to_string());
+        let worker = worker.clone(); // cheap clone
+        let task_tracker_clone = task_tracker.clone();
 
-        if let Some(content_type) = content_type {
-            if content_type != "image/png" {
-                tracing::warn!(
-                    "Receive a message with unsupported Content-Type: {}; skipping.",
-                    content_type
-                );
-                continue;
-            }
-        } else {
-            tracing::warn!("Receive a message without the Content-Type header; skipping.");
-            continue;
-        }
-
-        let frame_id = header_map
-            .get("Frame-Id")
-            .map(|frame_id| frame_id.to_string());
-
-        if let Some(ref frame_id) = frame_id {
-            tracing::info!("Processing frame {}…", frame_id);
-        } else {
-            tracing::warn!(
-                "Receive a message without the Frame-Id header. It is recommended to include the Frame-Id header."
-            );
-        }
-
-        let yolo_model = yolo_model.clone();
-        task_tracker.spawn_blocking(move || {
-            tracing::info!("Processing frame in a blocking task…");
-
-            let image = frame_message.payload;
-
-            let image_reader = {
-                let mut reader = image::ImageReader::new(std::io::Cursor::new(image));
-                reader.set_format(ImageFormat::Png);
-
-                reader
-            };
-
-            let image = match image_reader.decode() {
-                Ok(frame_data) => frame_data,
+        task_tracker.spawn(async move {
+            let payload = match frame_message.try_into() {
+                Ok(payload) => payload,
                 Err(e) => {
-                    tracing::warn!("Failed to decode image: {:?}; skipping.", e);
+                    tracing::warn!("Failed to parse the message: {:?}; skipping.", e);
                     return;
                 }
             };
 
-            let yolo_input = image_to_yolo_input_tensor(&image);
-            let yolo_output =
-                inference(&yolo_model, yolo_input.view()).expect("failed to run inference");
+            let results = task_tracker_clone
+                .spawn_blocking(move || worker.recognize(payload))
+                .await;
 
-            tracing::info!("Found {} entities", yolo_output.len());
+            let results = match results {
+                Ok(Ok(results)) => results,
+                Ok(Err(e)) => {
+                    tracing::warn!("Failed to recognize the payload: {:?}; skipping.", e);
+                    return;
+                }
+                Err(e) => {
+                    tracing::warn!(
+                        "Failed to create a thread to recognize the picture: {:?}; skipping.",
+                        e
+                    );
+                    return;
+                }
+            };
 
-            for bounding_box in yolo_output {
-                tracing::info!("Entity: {:?}", bounding_box);
+            tracing::info!("Found {} entities", results.len());
+            for result in results {
+                tracing::info!("Entity: {:?}", result);
             }
         });
     }
