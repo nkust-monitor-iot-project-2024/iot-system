@@ -14,6 +14,8 @@
     pkgs.gst_all_1.gst-libav
     pkgs.sqlfluff
     pkgs.sqlx-cli
+    pkgs.cargo-machete
+    pkgs.cargo-bloat
   ];
 
   # https://devenv.sh/languages/
