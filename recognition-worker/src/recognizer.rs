@@ -13,6 +13,7 @@ pub struct RecognitionPayload {
     pub monitor_id: Option<String>,
     pub picture: Bytes,
     pub picture_type: ImageFormat,
+    pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
 
 impl TryFrom<Message> for RecognitionPayload {
@@ -39,6 +40,12 @@ impl TryFrom<Message> for RecognitionPayload {
             .get("Monitor-Id")
             .map(|monitor_id| monitor_id.to_string());
 
+        let created_at = header_map
+            .get("Date")
+            .map(|date| chrono::DateTime::parse_from_rfc3339(date.as_str()))
+            .context("missing Date header")?
+            .context("failed to parse Date header")?;
+
         let picture = msg.payload;
         let picture_type = ImageFormat::Png;
 
@@ -47,6 +54,7 @@ impl TryFrom<Message> for RecognitionPayload {
             monitor_id,
             picture,
             picture_type,
+            created_at,
         })
     }
 }
@@ -59,6 +67,7 @@ pub struct RecognitionResult {
     pub label: String,
     pub confidence: f32,
     pub picture: Bytes,
+    pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
 
 #[derive(Clone)]
@@ -79,6 +88,7 @@ impl RecognitionWorker {
             monitor_id,
             picture,
             picture_type,
+            created_at,
         }: RecognitionPayload,
     ) -> anyhow::Result<Vec<RecognitionResult>> {
         tracing::info!("Recognizing frame {frame_id} from {monitor_id:?}…");
@@ -126,6 +136,7 @@ impl RecognitionWorker {
                     label: label.to_string(), // fixme: leverage ArcStr
                     confidence,
                     picture: Bytes::from(buf),
+                    created_at,
                 })
             })
             .collect::<anyhow::Result<Vec<RecognitionResult>>>()?;

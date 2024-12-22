@@ -93,6 +93,7 @@ async fn main() -> anyhow::Result<()> {
 
             let mut nats_header = HeaderMap::new();
             nats_header.append("Content-Type", "image/png");
+            nats_header.append("Date", chrono::Utc::now().to_rfc3339());
             nats_header.append("Frame-Id", frame_id.to_string());
 
             if let Some(monitor_id) = monitor_id {
