@@ -16,6 +16,7 @@
     pkgs.sqlx-cli
     pkgs.cargo-machete
     pkgs.cargo-bloat
+    pkgs.libiconv
   ];
 
   # https://devenv.sh/languages/
