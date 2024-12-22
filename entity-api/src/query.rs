@@ -22,6 +22,22 @@ impl QueryRoot {
         Ok(monitors)
     }
 
+    /// Get a monitor by ID.
+    /// If the ID is `None`, it means the monitor is not specified.
+    async fn monitor(
+        &self,
+        context: &Context<'_>,
+        id: Option<String>,
+    ) -> async_graphql::Result<Monitor> {
+        let pool = context.data::<DatabasePool>()?.get_pool();
+
+        let monitor = sqlx::query_as!(Monitor, "SELECT id FROM monitors WHERE id = $1", id)
+            .fetch_optional(&pool)
+            .await?;
+
+        Ok(monitor.unwrap_or(Monitor { id }))
+    }
+
     /// Get an entity by ID.
     async fn entity(&self, context: &Context<'_>, id: i32) -> async_graphql::Result<Entity> {
         let pool = context.data::<DatabasePool>()?.get_pool();
