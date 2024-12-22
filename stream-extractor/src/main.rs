@@ -27,21 +27,21 @@ async fn main() -> anyhow::Result<()> {
 
     let (sender, receiver) = bounded::<(usize, DynamicImage)>(30); // 30s
 
-    let extractor_worker = worker::ExtractorWorkerBuilder {
-        rtsp_url,
-        sender,
-        frame_interval,
-    }
-    .build()
-    .context("Failed to build extractor worker")?;
-
     let nats_client = async_nats::connect(&nats_url)
         .await
         .context("Failed to connect to NATS")?;
 
     let task_tracker = TaskTracker::new();
 
-    let _ = task_tracker.spawn_blocking(move || {
+    let extractor_worker_thread = task_tracker.spawn_blocking::<_, anyhow::Result<()>>(move || {
+        let extractor_worker = worker::ExtractorWorkerBuilder {
+            rtsp_url,
+            sender,
+            frame_interval,
+        }
+        .build()
+        .context("Failed to build extractor worker")?;
+
         extractor_worker
             .set_state(gst::State::Playing)
             .context("failed to start extractor worker")?;
@@ -68,7 +68,9 @@ async fn main() -> anyhow::Result<()> {
 
         extractor_worker
             .set_state(gst::State::Null)
-            .context("failed to stop extractor worker")
+            .context("failed to stop extractor worker")?;
+
+        Ok(())
     });
 
     for (frame_id, frame) in receiver {
@@ -100,6 +102,12 @@ async fn main() -> anyhow::Result<()> {
                 return;
             }
         });
+    }
+
+    task_tracker.close();
+
+    if let Err(e) = extractor_worker_thread.await {
+        tracing::error!("Extractor worker thread failed: {:?}", e);
     }
 
     task_tracker.wait().await;

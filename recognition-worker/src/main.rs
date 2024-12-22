@@ -101,5 +101,8 @@ async fn main() -> anyhow::Result<()> {
         });
     }
 
+    task_tracker.close();
+    task_tracker.wait().await;
+
     Ok(())
 }
