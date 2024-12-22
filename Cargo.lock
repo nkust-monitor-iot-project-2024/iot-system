@@ -519,6 +519,7 @@ dependencies = [
  "iana-time-zone",
  "js-sys",
  "num-traits",
+ "serde",
  "wasm-bindgen",
  "windows-targets 0.52.6",
 ]
@@ -833,6 +834,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "discord-webhook2"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bc0829b9fd827791b0a43ad5801e41c5585b24530f4736fcc50378d59eeca609"
+dependencies = [
+ "iso8061-timestamp",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "serde_repr",
+ "thiserror 1.0.69",
+ "tokio",
+ "url",
+]
+
+[[package]]
 name = "displaydoc"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -918,6 +935,26 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "uuid",
+]
+
+[[package]]
+name = "entity-gateway"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-nats",
+ "bytes",
+ "chrono",
+ "discord-webhook2",
+ "futures",
+ "image",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tokio-util",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
@@ -1907,6 +1944,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ddc24109865250148c2e0f3d25d4f0f479571723792d3802153c60922a4fb708"
 
 [[package]]
+name = "iso8061-timestamp"
+version = "0.1.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "64ed89a53a6109379366e7c6b03f1cf3bedafd74b2105b5c5c1c3a9c58c24db7"
+dependencies = [
+ "iso8601-timestamp",
+]
+
+[[package]]
+name = "iso8601-timestamp"
+version = "0.1.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b088f3296223f11d6bd70998132653b30b6f39e6ab4be055c0bda486fa8d11c7"
+dependencies = [
+ "generic-array",
+ "serde",
+ "time",
+]
+
+[[package]]
 name = "itertools"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2103,6 +2160,16 @@ name = "mime"
 version = "0.3.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6877bb514081ee2a7ff5ef9de3281f14a4dd4bceac4c09388074a6b5df8a139a"
+
+[[package]]
+name = "mime_guess"
+version = "2.0.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f7c44f8e672c00fe5308fa235f821cb4198414e1c77935c1ab6948d3fd78550e"
+dependencies = [
+ "mime",
+ "unicase",
+]
 
 [[package]]
 name = "minimal-lexical"
@@ -2983,6 +3050,7 @@ dependencies = [
  "anyhow",
  "async-nats",
  "bytes",
+ "chrono",
  "futures",
  "image",
  "ort",
@@ -3084,6 +3152,7 @@ dependencies = [
  "js-sys",
  "log",
  "mime",
+ "mime_guess",
  "native-tls",
  "once_cell",
  "percent-encoding",
@@ -3793,6 +3862,7 @@ dependencies = [
  "anyhow",
  "async-nats",
  "bytes",
+ "chrono",
  "crossbeam",
  "glib",
  "gstreamer",
@@ -4350,6 +4420,12 @@ checksum = "e1b88fcfe09e89d3866a5c11019378088af2d24c3fbd4f0543f96b479ec90697"
 dependencies = [
  "version_check",
 ]
+
+[[package]]
+name = "unicase"
+version = "2.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7e51b68083f157f853b6379db119d1c1be0e6e4dec98101079dec41f6f5cf6df"
 
 [[package]]
 name = "unicode-bidi"

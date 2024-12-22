@@ -5,4 +5,5 @@ members = [
     "entity-api",
     "stream-extractor",
     "recognition-worker",
+    "entity-gateway",
 ]
