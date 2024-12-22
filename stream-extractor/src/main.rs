@@ -2,7 +2,7 @@ pub(crate) mod config;
 pub(crate) mod worker;
 
 use anyhow::Context;
-use base64::prelude::*;
+use async_nats::HeaderMap;
 use bytes::Bytes;
 use config::ExtractorConfig;
 use crossbeam::channel::bounded;
@@ -85,13 +85,16 @@ async fn main() -> anyhow::Result<()> {
                 return;
             }
 
-            // encode the PNG frame to Base64
-            let base64_frame = BASE64_STANDARD.encode(&buf);
+            let bytes = Bytes::from(buf);
 
-            let bytes = Bytes::from(base64_frame);
+            let mut nats_header = HeaderMap::new();
+            nats_header.append("Content-Type", "image/png");
+            nats_header.append("Frame-Id", frame_id.to_string());
 
             // publish the frame to NATS
-            let result = nats_client.publish("frames", bytes).await;
+            let result = nats_client
+                .publish_with_headers("frames", nats_header, bytes)
+                .await;
             if let Err(err) = result {
                 tracing::error!("Failed to publish frame to NATS: {:?}", err);
                 return;

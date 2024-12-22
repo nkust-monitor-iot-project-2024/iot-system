@@ -3,5 +3,6 @@
 resolver = "3"
 members = [
     "entity-api",
-    "stream-extractor"
+    "stream-extractor",
+    "recognition-worker",
 ]
