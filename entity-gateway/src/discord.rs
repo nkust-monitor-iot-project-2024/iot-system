@@ -19,7 +19,7 @@ impl DiscordHandler {
 
 #[async_trait::async_trait]
 impl RecognizedEventHandler for DiscordHandler {
-    #[tracing::instrument(skip(self))]
+    #[tracing::instrument(skip_all)]
     async fn on_receive_recognition_result(&self, _: &Context, result: &RecognitionResults) {
         tracing::info!("Received recognition result from the event bus and sending it to Discord");
 

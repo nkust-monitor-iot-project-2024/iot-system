@@ -17,7 +17,7 @@ impl DatabaseHandler {
 
 #[async_trait::async_trait]
 impl RecognizedEventHandler for DatabaseHandler {
-    #[tracing::instrument(skip(self, context))]
+    #[tracing::instrument(skip_all)]
     async fn on_receive_recognition_result(&self, context: &Context, result: &RecognitionResults) {
         tracing::info!(
             "Received recognition result from the event bus and sending it to the database"
