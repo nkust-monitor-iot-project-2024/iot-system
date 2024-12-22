@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use crate::storage::Storage;
+use crate::{query::Monitor, storage::Storage};
 use async_graphql::SimpleObject;
 use sqlx::types::BigDecimal;
 
@@ -18,6 +18,9 @@ pub struct Entity {
     ///
     /// It should be in the range of 0.0 to 1.0.
     pub confidence: BigDecimal,
+    /// The monitor of the entity.
+    #[graphql(skip)]
+    pub monitor_id: Option<String>,
     /// The time when the entity was detected.
     pub created_at: time::PrimitiveDateTime,
 }
@@ -38,5 +41,11 @@ impl Entity {
         let image = storage.presign_read(&path, EXPIRE_AT).await?;
 
         Ok(image.uri().to_string())
+    }
+
+    pub async fn monitor(&self) -> Monitor {
+        Monitor {
+            id: self.monitor_id.clone(),
+        }
     }
 }
