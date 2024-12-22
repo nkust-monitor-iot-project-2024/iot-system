@@ -7,6 +7,12 @@ pub struct QueryRoot;
 
 #[Object]
 impl QueryRoot {
+    /// Get a list of entities.
+    ///
+    /// The default pagination stragety is to get the last 10 entities.
+    /// You can use `first` and `last` arguments to customize the pagination.
+    /// If you want to get the next page, you should provide the `after` (for `first`)
+    /// or `before` (for `last`) cursor.
     async fn entities(
         &self,
         context: &Context<'_>,
@@ -16,7 +22,7 @@ impl QueryRoot {
         last: Option<i32>,
     ) -> async_graphql::Result<Connection<i32, Entity, EmptyFields, EmptyFields>> {
         query(after, before, first, last, |after, before, first, last| async move {
-            let pool = get_pgpool(context)?;
+            let pool = context.data::<DatabasePool>()?.get_pool();
 
             if let Some(first) = first {
                 tracing::info!("after: {:?}, first: {:?}", after, first);
@@ -58,8 +64,9 @@ impl QueryRoot {
         }).await
     }
 
+    /// Get an entity by ID.
     async fn entity(&self, context: &Context<'_>, id: i32) -> async_graphql::Result<Entity> {
-        let pool = get_pgpool(context)?;
+        let pool = context.data::<DatabasePool>()?.get_pool();
 
         let entity = sqlx::query_as!(
             Entity,

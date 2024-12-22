@@ -1,17 +1,24 @@
 use std::time::Duration;
 
-use crate::{prelude::*, storage::Storage};
+use crate::storage::Storage;
 use async_graphql::SimpleObject;
 use sqlx::types::BigDecimal;
 
+/// A detected entity.
 #[derive(SimpleObject)]
 #[graphql(complex)]
 pub struct Entity {
+    /// The ID of the entity.
     pub id: i32,
     #[graphql(skip)]
     pub image_id: String,
+    /// The label of the entity.
     pub label: String,
+    /// The confidence of the entity.
+    ///
+    /// It should be in the range of 0.0 to 1.0.
     pub confidence: BigDecimal,
+    /// The time when the entity was detected.
     pub created_at: time::PrimitiveDateTime,
 }
 
