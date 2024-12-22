@@ -1,0 +1,16 @@
+# syntax=docker/dockerfile:1
+
+FROM rust:1 AS builder
+
+WORKDIR /usr/src/recognition-worker
+
+COPY --link . .
+RUN cargo install --locked --path recognition-worker
+
+FROM debian:bookworm-slim
+
+ADD https://huggingface.co/pan93412/yolo-v11-onnx/resolve/main/yolo11x.onnx models/yolo11x.onnx
+
+COPY --from=builder /usr/local/cargo/bin/recognition-worker /usr/local/bin/recognition-worker
+
+CMD ["recognition-worker"]

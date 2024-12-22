@@ -1,0 +1,6 @@
+.devenv/
+.direnv/
+target/
+models/
+.devenv*
+Dockerfile
