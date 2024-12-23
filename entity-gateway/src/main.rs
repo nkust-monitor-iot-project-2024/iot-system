@@ -59,11 +59,6 @@ async fn main() -> anyhow::Result<()> {
 
         tracing::debug!("Received recognition result: {recognition_result:?}");
 
-        // if there is no result, skip the loop
-        if recognition_result.results.is_empty() {
-            continue;
-        }
-
         // filter out the results that is not person
         let recognition_result = RecognitionResults {
             results: recognition_result
@@ -72,6 +67,11 @@ async fn main() -> anyhow::Result<()> {
                 .filter(|result| result.label == "person")
                 .collect(),
         };
+
+        // if there is no result, skip the loop
+        if recognition_result.results.is_empty() {
+            continue;
+        }
 
         let publishers = publishers.clone();
 
